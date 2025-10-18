@@ -1,3 +1,4 @@
 # APS02_2025_SISTEMA_BIOMETRIA
 SISTEMA DE IDENTIFICAÇÃO E AUTENTICAÇÃO BIOMÉTRICA
  > LINK BANCO DE SQLITE COM IMPRESSOES DIGITAIS <https://drive.google.com/file/d/13F_j55pebCYXHh_oL4lYeVYeMpuUWXdw/view?usp=drive_link>
+> IMPRESSOES EXTRAIDAS DE <https://www.kaggle.com/datasets/ruizgara/socofing>
