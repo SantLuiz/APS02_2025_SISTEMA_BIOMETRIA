@@ -1,0 +1,110 @@
+⚙️ 1. Fluxo geral de um sistema biométrico de catraca
+
+Cadastro (enrollment)
+
+O funcionário coloca o dedo em um leitor biométrico.
+
+O leitor não salva a imagem da digital (isso é muito importante).
+
+Ele extrai características únicas — chamadas minúcias (pontos de bifurcação, terminações de sulcos, curvaturas, etc.).
+
+Essas minúcias são convertidas em um template biométrico — uma representação matemática compacta, como um vetor numérico ou um hash.
+
+Esse template é então enviado para o servidor e armazenado no banco de dados seguro associado ao funcionário.
+
+Verificação (authentication)
+
+Quando o funcionário coloca o dedo novamente:
+
+O leitor gera um novo template a partir da digital atual.
+
+Esse template é comparado com o template armazenado para aquele funcionário (ou com todos, se não houver identificação prévia).
+
+Um algoritmo de correspondência (matcher) calcula a similaridade (ex: 98% de correspondência).
+
+Se o valor for maior que o limiar (threshold) configurado, o acesso é autorizado.
+
+A catraca então recebe um sinal elétrico ou comando lógico para destravar o mecanismo.
+
+🧠 2. Sobre o armazenamento
+
+Os dados não são imagens de digitais — isso é fundamental por razões de segurança e performance.
+
+O que realmente é salvo é:
+
+User ID | Template (vetor ou hash) | Nível de acesso | Data de cadastro
+
+
+Por exemplo:
+
+{
+  "user_id": "12345",
+  "fingerprint_template": "A47F23B9C1E9D5...",
+  "access_level": 2,
+  "last_update": "2025-10-18"
+}
+
+Onde esse template fica salvo:
+
+Em banco de dados local da catraca (para validação offline, caso perca conexão).
+
+E/ou em um servidor central, que sincroniza os dados entre todas as catracas.
+
+Muitos sistemas usam bancos relacionais (PostgreSQL, MySQL) ou NoSQL (MongoDB) dependendo da arquitetura.
+
+🌐 3. Troca de dados (comunicação)
+
+Normalmente, essa comunicação entre catracas e servidor ocorre via rede:
+
+TCP/IP ou MQTT em redes locais (LAN).
+
+Em sistemas modernos, APIs REST ou gRPC são usadas para comunicação com o servidor.
+
+Os dados são criptografados (TLS/SSL) para evitar interceptação.
+
+A catraca pode enviar mensagens do tipo:
+
+{
+  "event": "access_attempt",
+  "device_id": "catraca_01",
+  "user_template": "B12D3F...",
+  "timestamp": "2025-10-18T10:42:00Z"
+}
+
+
+E o servidor responde com algo como:
+
+{
+  "status": "authorized",
+  "user_name": "Luiz Pereira",
+  "access_level": 2
+}
+
+🧰 4. Tecnologias reais envolvidas
+
+Leitores biométricos: ZKTeco, Suprema, Futronic, DigitalPersona, etc.
+
+Protocolos: RS-485, TCP/IP, ou USB para comunicação.
+
+Banco de dados: PostgreSQL, MongoDB, ou banco embarcado (SQLite).
+
+Software de controle: normalmente desenvolvido em C++, Java ou Python.
+
+API ou SDK do fabricante: para capturar templates e fazer matching.
+
+🔐 5. Segurança
+
+Os templates biométricos são criptografados (geralmente AES-256).
+
+Jamais se guarda a imagem bruta da digital — apenas o template matemático.
+
+Cada template é inútil fora do sistema (não pode ser revertido em imagem).
+
+Logs de acesso e tentativas ficam registrados com hora, usuário e catraca.
+
+🏢 6. Resumindo visualmente
+[Sensor biométrico] → Extrai características → Gera template
+       ↓
+[Microcontrolador / Catraça] ↔ [Servidor Central]
+       ↓
+  Autorizado? → Sinal elétrico → Gira a catraca
