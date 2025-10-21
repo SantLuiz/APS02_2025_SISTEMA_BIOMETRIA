@@ -6,7 +6,8 @@ while True:
     nivel = input("""Insira seu nível de acesso: 
                   [1] - ACESSO LIVRE
                   [2] - ACESSO LIMITADO
-                  [3] - ACESSO RESTRITO                  
+                  [3] - ACESSO RESTRITO   
+                  [4] - CADASTRAR USUÁRIO               
 -->""")
     match nivel:
         case "1":
