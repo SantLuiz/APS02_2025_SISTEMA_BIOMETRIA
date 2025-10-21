@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from verifica import *
+from verifica import extract_minutiae, generate_template
 
 # Nome do arquivo do banco de dados
 DB_NAME = "biometria.db"
@@ -45,9 +45,9 @@ conn.commit()
 
 print("✅ Banco de dados 'biometria.db' criado com sucesso!")
 
-cur.execute("INSERT INTO USUARIOS (NOME, NIVEL_ACESSO) VALUES (?, ?)", ("Alice Admin", 3))
-cur.execute("INSERT INTO USUARIOS (NOME, NIVEL_ACESSO) VALUES (?, ?)", ("Bruno Operador", 2))
-cur.execute("INSERT INTO USUARIOS (NOME, NIVEL_ACESSO) VALUES (?, ?)", ("Carla Leitura", 1))
+cur.execute("INSERT INTO USUARIOS (NOME, NIVEL_ACESSO) VALUES (?, ?)", ("Carlos", 3))
+cur.execute("INSERT INTO USUARIOS (NOME, NIVEL_ACESSO) VALUES (?, ?)", ("Marcela", 2))
+cur.execute("INSERT INTO USUARIOS (NOME, NIVEL_ACESSO) VALUES (?, ?)", ("Antonio", 1))
 
 # Inserção de informações com links reais relacionados ao meio ambiente
 cur.execute("INSERT INTO INFORMACOES (CLASSIFICACAO, LINK) VALUES (?, ?)",
