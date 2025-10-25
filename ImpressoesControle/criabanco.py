@@ -57,6 +57,8 @@ cur.execute("INSERT INTO INFORMACOES (CLASSIFICACAO, LINK) VALUES (?, ?)",
 cur.execute("INSERT INTO INFORMACOES (CLASSIFICACAO, LINK) VALUES (?, ?)",
             (3, "https://sustainabledevelopment.un.org/content/documents/Agenda21.pdf"))  # documento da ONU “Agenda 21” :contentReference[oaicite:2]{index=2}
 
+
+
 conn.commit()
 
 print("✅ Dados de exemplo inseridos com sucesso!")
