@@ -117,14 +117,16 @@ class BiometricSys:
         for x1, y1, type1 in template1:
             for x2, y2, type2 in template2:
                 dist = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
-                if type1 == type2 and dist <= tolerance:
+                # use the resolved tolerance variable (tol) — 'tolerance' may be None
+                if type1 == type2 and dist <= tol:
                     matched += 1
                     break  # evita múltiplos matches para o mesmo ponto
 
         
         return matched / max(len(template1), len(template2)) * 100
 
-    def visualize_minutiae(self, image_path: str, minutiae_points: List[Tuple[int, int, int]], save_path: str = "output_minutiae.png", show: bool = True) -> np.ndarray:
+    @staticmethod
+    def visualize_minutiae(image_path: str, minutiae_points: List[Tuple[int, int, int]], save_path: str = "output_minutiae.png", show: bool = True) -> np.ndarray:
         """
         Gera uma imagem visualizando os pontos de minúcia detectados na impressão digital.
 
@@ -175,7 +177,8 @@ class BiometricSys:
 
         return img_color
 
-    def get_img_path(self) -> str:
+    @staticmethod
+    def get_img_path() -> str:
         """
         Obtém o caminho do arquivo de imagem da impressão digital.
 
@@ -190,7 +193,7 @@ class BiometricSys:
 
         if not image_path:
             print("Nunhuma imagem selecionada.")
-            exit()
+            #exit()
 
         else:
             return image_path

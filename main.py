@@ -1,27 +1,75 @@
-import os
-while True:
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-    print("MINISTÉRIO DO MEIO AMBIENTE")
-    nivel = input("""Insira seu nível de acesso: 
-                  [1] - ACESSO LIVRE
-                  [2] - ACESSO LIMITADO
-                  [3] - ACESSO RESTRITO   
-                  [4] - CADASTRAR USUÁRIO               
--->""")
-    match nivel:
-        case "1":
-            print("Nivel 1 de acesso")
-            input("Aperte Qualquer Coisa para continuar")
-        case "2":
-            print("Nivel 2 de acesso")
-            input("Aperte Qualquer Coisa para continuar")
-        case "3":
-            print("Nivel 3 de acesso")
-            input("Aperte Qualquer Coisa para continuar")
-        case _:
-            print("Insira uma opção valida")
-            input("Aperte Qualquer Coisa para continuar")
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from BiometricSys import BiometricSys
+from UserManager import UserManager
 
 
+def start():
+    """Cria e inicia a interface principal.
 
+    Chamar `start()` abre a janela principal e executa o loop do Tk. Isso permite
+    que outros módulos (por exemplo `acessos`) importem `main` sem abrir a GUI
+    imediatamente, e chamem `main.start()` quando desejarem trocar de janela.
+    """
+    # Create the main window
+    root = tk.Tk()
+    root.title("Cadastro de Usuário")
+    root.geometry("300x150")
+    root.resizable(False, False)
+
+    # Label for username
+    label_nome = ttk.Label(root, text="Nome de Usuário:")
+    label_nome.pack(pady=(20, 5))
+
+    # Entry for username
+    entry_nome = ttk.Entry(root, width=30)
+    entry_nome.pack()
+
+    def Confere():
+        biometria = BiometricSys()
+        gerente = UserManager()
+        username = entry_nome.get()
+        template_valido = False
+        
+        user_id = gerente.get_user_id(username)
+
+        if user_id is not None:
+
+            img_path = BiometricSys.get_img_path()
+            template_novo = biometria.generate_template(biometria.extract_minutiae(img_path))    
+            templates_cadastrados = gerente.get_fingerprints(user_id)
+
+            for t in templates_cadastrados:
+                score = biometria.compare_templates(template_novo, t)
+                if score > 90:
+                    messagebox.showinfo("APROVADO!","IMPRESSÃO VALIDA")
+                    template_valido = True
+                    # fecha a janela atual e abre o módulo de acessos
+                    try:
+                        root.destroy()
+                    except Exception:
+                        pass
+                    try:
+                        import acessos
+                        acessos.start(username)
+                    except Exception as e:
+                        messagebox.showerror("Erro", f"Não foi possível abrir a tela de acessos: {e}")
+                    break
+                
+            if not template_valido:
+                messagebox.showerror("Erro", "IMPRESSÃO INVALIDA")
+
+        else:
+            messagebox.showerror("Erro", "NOME INVALIDO")
+
+    # Button for fingerprint insertion
+    btn_inserir = ttk.Button(root, text="Inserir Digital", command = Confere)
+    btn_inserir.pack(pady=20)
+
+    # Run the app
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    start()
