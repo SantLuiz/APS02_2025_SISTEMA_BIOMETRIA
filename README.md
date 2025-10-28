@@ -1,4 +1,4 @@
-![Linguagem](https://img.shields.io/badge/Linguagem-Python-green) ![Tecnologia](https://img.shields.io/badge/Framework-Flet-purple) ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
+![Linguagem](https://img.shields.io/badge/Linguagem-Python-green) ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
 
 # APS02_2025_SISTEMA_BIOMETRIA
 SISTEMA DE IDENTIFICAÇÃO E AUTENTICAÇÃO BIOMÉTRICA
