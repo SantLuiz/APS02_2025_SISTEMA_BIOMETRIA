@@ -39,9 +39,6 @@
                                 <a class="function" href="#UserManager.__init__">UserManager</a>
                         </li>
                         <li>
-                                <a class="variable" href="#UserManager.db_path">db_path</a>
-                        </li>
-                        <li>
                                 <a class="variable" href="#UserManager.conn">conn</a>
                         </li>
                         <li>
@@ -54,7 +51,13 @@
                                 <a class="function" href="#UserManager.get_user_id">get_user_id</a>
                         </li>
                         <li>
+                                <a class="function" href="#UserManager.get_acess_lvl">get_acess_lvl</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#UserManager.get_fingerprints">get_fingerprints</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#UserManager.get_links_by_access">get_links_by_access</a>
                         </li>
                         <li>
                                 <a class="function" href="#UserManager.close">close</a>
@@ -83,86 +86,121 @@ UserManager    </h1>
 
                         <label class="view-source-button" for="mod-UserManager-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">import</span> <span class="nn">sqlite3</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="k">class</span> <span class="nc">UserManager</span><span class="p">:</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">        CLASSE RESPONSÁVEL POR GERENCIAR OS USUARIOS ADICIONADOS AO BANCO DE DADOS</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">        Attributes:</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">            db_path (str): Caminho para o banco de dados.</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">            conn (sqlite3.Connection): Ativar conexão com o banco de dados.</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">            cursor (sqlite3.Cursor): Cursor para executar comandos SQL.</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;biometria.db&quot;</span><span class="p">):</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">        Inicializa o gerenciador de usuários e estabelece a conexão com o banco de dados.</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">        Args:</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">            db_path (str, opcional): Caminho para o banco de dados SQLite.</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">                                     O padrão é &#39;biometria.db&#39;.</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">        Retorna uma lista com todos os usuários cadastrados no banco de dados.</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">        Returns:</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">            list[tuple]: Lista de tuplas contendo (ID, NOME) de cada usuário.</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT ID, NOME FROM usuarios&quot;</span><span class="p">)</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="k">def</span> <span class="nf">get_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="sd">        Retorna o ID de um usuário a partir do nome informado.</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="sd">        Args:</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="sd">            username (str): Nome do usuário.</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="sd">        Returns:</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="sd">            int | None: Retorna o ID do usuário se encontrado, caso contrário None.</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="p">,))</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>    
-</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>    <span class="k">def</span> <span class="nf">get_fingerprints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="sd">        Obtém todas as digitais (templates biométricos) associadas a um usuário.</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a><span class="sd">        Cada template é convertido de BLOB para um array NumPy com formato (-1, 3).</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="sd">        Args:</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a><span class="sd">            user_id (int): ID do usuário cujas digitais serão recuperadas.</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a><span class="sd">        Returns:</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a><span class="sd">            list[np.ndarray]: Lista de templates biométricos do usuário.</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>
-</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT template FROM DIGITAIS WHERE ID_USUARIO = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>    
-</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a><span class="sd">        Encerra a conexão com o banco de dados.</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a>
-</span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a><span class="sd">        É importante chamar este método ao finalizar o uso da classe para</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a><span class="sd">        liberar os recursos e evitar corrupção no banco de dados.</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>
-</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>    
-</span><span id="L-78"><a href="#L-78"><span class="linenos">78</span></a>
-</span><span id="L-79"><a href="#L-79"><span class="linenos">79</span></a>     
-</span><span id="L-80"><a href="#L-80"><span class="linenos">80</span></a>        
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="kn">import</span> <span class="nn">sqlite3</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="kn">import</span> <span class="nn">config</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="k">class</span> <span class="nc">UserManager</span><span class="p">:</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="sd">        CLASSE RESPONSÁVEL POR GERENCIAR OS USUARIOS ADICIONADOS AO BANCO DE DADOS</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="sd">        Attributes:</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="sd">            db_path (str): Caminho para o banco de dados.</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="sd">            conn (sqlite3.Connection): Ativar conexão com o banco de dados.</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="sd">            cursor (sqlite3.Cursor): Cursor para executar comandos SQL.</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="sd">        Inicializa o gerenciador de usuários e estabelece a conexão com o banco de dados.</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">        Args:</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="sd">            db_path (str, opcional): Caminho para o banco de dados SQLite.</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="sd">                                     Se não for fornecido, usa `config.DB_PATH`.</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>        
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>        <span class="k">if</span> <span class="n">db_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>            
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>    <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">        Retorna uma lista com todos os usuários cadastrados no banco de dados.</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a><span class="sd">        Returns:</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="sd">            list[tuple]: Lista de tuplas contendo (ID, NOME) de cada usuário.</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT ID, NOME FROM usuarios&quot;</span><span class="p">)</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>    
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>    <span class="k">def</span> <span class="nf">get_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">        Retorna o ID de um usuário a partir do nome informado.</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        Args:</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="sd">            username (str): Nome do usuário.</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="sd">        Returns:</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">            int | None: Retorna o ID do usuário se encontrado, caso contrário None.</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>    
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>    <span class="k">def</span> <span class="nf">get_acess_lvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">        Retorna o nivel de acesso de um usuário a partir do nome informado.</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">        Args:</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="sd">            username (str): Nome do usuário.</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">        Returns:</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="sd">            int | None: Retorna o nivel de acesso do usuário se encontrado, caso contrário None.</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT nivel_acesso FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>    
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="k">def</span> <span class="nf">get_fingerprints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">        Obtém todas as digitais (templates biométricos) associadas a um usuário.</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">        Cada template é convertido de BLOB para um array NumPy com formato (-1, 3).</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        Args:</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">            user_id (int): ID do usuário cujas digitais serão recuperadas.</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">        Returns:</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">            list[np.ndarray]: Lista de templates biométricos do usuário.</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT template FROM DIGITAIS WHERE ID_USUARIO = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>    
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">def</span> <span class="nf">get_links_by_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span> 
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        Retorna uma lista de links disponíveis para o nível de acesso do usuário.</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">        Args</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="sd">            user_level (int) : Nivel de Acesso do usuário</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="sd">    </span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="sd">        Returns:</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">            list: Lista de links que o usuario pode acessar</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>        
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT LINK FROM INFORMACOES WHERE CLASSIFICACAO &lt;= ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_level</span><span class="p">,))</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>        <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>        <span class="k">return</span> <span class="n">links</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">        Encerra a conexão com o banco de dados.</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">        É importante chamar este método ao finalizar o uso da classe para</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a><span class="sd">        liberar os recursos e evitar corrupção no banco de dados.</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>    
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>     
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>        
 </span></pre></div>
 
 
@@ -178,77 +216,111 @@ UserManager    </h1>
 
     </div>
     <a class="headerlink" href="#UserManager"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager-6"><a href="#UserManager-6"><span class="linenos"> 6</span></a><span class="k">class</span> <span class="nc">UserManager</span><span class="p">:</span>
-</span><span id="UserManager-7"><a href="#UserManager-7"><span class="linenos"> 7</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager-8"><a href="#UserManager-8"><span class="linenos"> 8</span></a><span class="sd">        CLASSE RESPONSÁVEL POR GERENCIAR OS USUARIOS ADICIONADOS AO BANCO DE DADOS</span>
-</span><span id="UserManager-9"><a href="#UserManager-9"><span class="linenos"> 9</span></a>
-</span><span id="UserManager-10"><a href="#UserManager-10"><span class="linenos">10</span></a><span class="sd">        Attributes:</span>
-</span><span id="UserManager-11"><a href="#UserManager-11"><span class="linenos">11</span></a><span class="sd">            db_path (str): Caminho para o banco de dados.</span>
-</span><span id="UserManager-12"><a href="#UserManager-12"><span class="linenos">12</span></a><span class="sd">            conn (sqlite3.Connection): Ativar conexão com o banco de dados.</span>
-</span><span id="UserManager-13"><a href="#UserManager-13"><span class="linenos">13</span></a><span class="sd">            cursor (sqlite3.Cursor): Cursor para executar comandos SQL.</span>
-</span><span id="UserManager-14"><a href="#UserManager-14"><span class="linenos">14</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="UserManager-15"><a href="#UserManager-15"><span class="linenos">15</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;biometria.db&quot;</span><span class="p">):</span>
-</span><span id="UserManager-16"><a href="#UserManager-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager-17"><a href="#UserManager-17"><span class="linenos">17</span></a><span class="sd">        Inicializa o gerenciador de usuários e estabelece a conexão com o banco de dados.</span>
-</span><span id="UserManager-18"><a href="#UserManager-18"><span class="linenos">18</span></a>
-</span><span id="UserManager-19"><a href="#UserManager-19"><span class="linenos">19</span></a><span class="sd">        Args:</span>
-</span><span id="UserManager-20"><a href="#UserManager-20"><span class="linenos">20</span></a><span class="sd">            db_path (str, opcional): Caminho para o banco de dados SQLite.</span>
-</span><span id="UserManager-21"><a href="#UserManager-21"><span class="linenos">21</span></a><span class="sd">                                     O padrão é &#39;biometria.db&#39;.</span>
-</span><span id="UserManager-22"><a href="#UserManager-22"><span class="linenos">22</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager-23"><a href="#UserManager-23"><span class="linenos">23</span></a>
-</span><span id="UserManager-24"><a href="#UserManager-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
-</span><span id="UserManager-25"><a href="#UserManager-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
-</span><span id="UserManager-26"><a href="#UserManager-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-</span><span id="UserManager-27"><a href="#UserManager-27"><span class="linenos">27</span></a>
-</span><span id="UserManager-28"><a href="#UserManager-28"><span class="linenos">28</span></a>    <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-</span><span id="UserManager-29"><a href="#UserManager-29"><span class="linenos">29</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager-30"><a href="#UserManager-30"><span class="linenos">30</span></a><span class="sd">        Retorna uma lista com todos os usuários cadastrados no banco de dados.</span>
-</span><span id="UserManager-31"><a href="#UserManager-31"><span class="linenos">31</span></a>
-</span><span id="UserManager-32"><a href="#UserManager-32"><span class="linenos">32</span></a><span class="sd">        Returns:</span>
-</span><span id="UserManager-33"><a href="#UserManager-33"><span class="linenos">33</span></a><span class="sd">            list[tuple]: Lista de tuplas contendo (ID, NOME) de cada usuário.</span>
-</span><span id="UserManager-34"><a href="#UserManager-34"><span class="linenos">34</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager-35"><a href="#UserManager-35"><span class="linenos">35</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT ID, NOME FROM usuarios&quot;</span><span class="p">)</span>
-</span><span id="UserManager-36"><a href="#UserManager-36"><span class="linenos">36</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-</span><span id="UserManager-37"><a href="#UserManager-37"><span class="linenos">37</span></a>    
-</span><span id="UserManager-38"><a href="#UserManager-38"><span class="linenos">38</span></a>    <span class="k">def</span> <span class="nf">get_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span id="UserManager-39"><a href="#UserManager-39"><span class="linenos">39</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager-40"><a href="#UserManager-40"><span class="linenos">40</span></a><span class="sd">        Retorna o ID de um usuário a partir do nome informado.</span>
-</span><span id="UserManager-41"><a href="#UserManager-41"><span class="linenos">41</span></a>
-</span><span id="UserManager-42"><a href="#UserManager-42"><span class="linenos">42</span></a><span class="sd">        Args:</span>
-</span><span id="UserManager-43"><a href="#UserManager-43"><span class="linenos">43</span></a><span class="sd">            username (str): Nome do usuário.</span>
-</span><span id="UserManager-44"><a href="#UserManager-44"><span class="linenos">44</span></a>
-</span><span id="UserManager-45"><a href="#UserManager-45"><span class="linenos">45</span></a><span class="sd">        Returns:</span>
-</span><span id="UserManager-46"><a href="#UserManager-46"><span class="linenos">46</span></a><span class="sd">            int | None: Retorna o ID do usuário se encontrado, caso contrário None.</span>
-</span><span id="UserManager-47"><a href="#UserManager-47"><span class="linenos">47</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager-48"><a href="#UserManager-48"><span class="linenos">48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="p">,))</span>
-</span><span id="UserManager-49"><a href="#UserManager-49"><span class="linenos">49</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-</span><span id="UserManager-50"><a href="#UserManager-50"><span class="linenos">50</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span id="UserManager-51"><a href="#UserManager-51"><span class="linenos">51</span></a>    
-</span><span id="UserManager-52"><a href="#UserManager-52"><span class="linenos">52</span></a>    <span class="k">def</span> <span class="nf">get_fingerprints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-</span><span id="UserManager-53"><a href="#UserManager-53"><span class="linenos">53</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager-54"><a href="#UserManager-54"><span class="linenos">54</span></a><span class="sd">        Obtém todas as digitais (templates biométricos) associadas a um usuário.</span>
-</span><span id="UserManager-55"><a href="#UserManager-55"><span class="linenos">55</span></a>
-</span><span id="UserManager-56"><a href="#UserManager-56"><span class="linenos">56</span></a><span class="sd">        Cada template é convertido de BLOB para um array NumPy com formato (-1, 3).</span>
-</span><span id="UserManager-57"><a href="#UserManager-57"><span class="linenos">57</span></a>
-</span><span id="UserManager-58"><a href="#UserManager-58"><span class="linenos">58</span></a><span class="sd">        Args:</span>
-</span><span id="UserManager-59"><a href="#UserManager-59"><span class="linenos">59</span></a><span class="sd">            user_id (int): ID do usuário cujas digitais serão recuperadas.</span>
-</span><span id="UserManager-60"><a href="#UserManager-60"><span class="linenos">60</span></a>
-</span><span id="UserManager-61"><a href="#UserManager-61"><span class="linenos">61</span></a><span class="sd">        Returns:</span>
-</span><span id="UserManager-62"><a href="#UserManager-62"><span class="linenos">62</span></a><span class="sd">            list[np.ndarray]: Lista de templates biométricos do usuário.</span>
-</span><span id="UserManager-63"><a href="#UserManager-63"><span class="linenos">63</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager-64"><a href="#UserManager-64"><span class="linenos">64</span></a>
-</span><span id="UserManager-65"><a href="#UserManager-65"><span class="linenos">65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT template FROM DIGITAIS WHERE ID_USUARIO = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
-</span><span id="UserManager-66"><a href="#UserManager-66"><span class="linenos">66</span></a>        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-</span><span id="UserManager-67"><a href="#UserManager-67"><span class="linenos">67</span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
-</span><span id="UserManager-68"><a href="#UserManager-68"><span class="linenos">68</span></a>    
-</span><span id="UserManager-69"><a href="#UserManager-69"><span class="linenos">69</span></a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="UserManager-70"><a href="#UserManager-70"><span class="linenos">70</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager-71"><a href="#UserManager-71"><span class="linenos">71</span></a><span class="sd">        Encerra a conexão com o banco de dados.</span>
-</span><span id="UserManager-72"><a href="#UserManager-72"><span class="linenos">72</span></a>
-</span><span id="UserManager-73"><a href="#UserManager-73"><span class="linenos">73</span></a><span class="sd">        É importante chamar este método ao finalizar o uso da classe para</span>
-</span><span id="UserManager-74"><a href="#UserManager-74"><span class="linenos">74</span></a><span class="sd">        liberar os recursos e evitar corrupção no banco de dados.</span>
-</span><span id="UserManager-75"><a href="#UserManager-75"><span class="linenos">75</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager-76"><a href="#UserManager-76"><span class="linenos">76</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager-7"><a href="#UserManager-7"><span class="linenos">  7</span></a><span class="k">class</span> <span class="nc">UserManager</span><span class="p">:</span>
+</span><span id="UserManager-8"><a href="#UserManager-8"><span class="linenos">  8</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-9"><a href="#UserManager-9"><span class="linenos">  9</span></a><span class="sd">        CLASSE RESPONSÁVEL POR GERENCIAR OS USUARIOS ADICIONADOS AO BANCO DE DADOS</span>
+</span><span id="UserManager-10"><a href="#UserManager-10"><span class="linenos"> 10</span></a>
+</span><span id="UserManager-11"><a href="#UserManager-11"><span class="linenos"> 11</span></a><span class="sd">        Attributes:</span>
+</span><span id="UserManager-12"><a href="#UserManager-12"><span class="linenos"> 12</span></a><span class="sd">            db_path (str): Caminho para o banco de dados.</span>
+</span><span id="UserManager-13"><a href="#UserManager-13"><span class="linenos"> 13</span></a><span class="sd">            conn (sqlite3.Connection): Ativar conexão com o banco de dados.</span>
+</span><span id="UserManager-14"><a href="#UserManager-14"><span class="linenos"> 14</span></a><span class="sd">            cursor (sqlite3.Cursor): Cursor para executar comandos SQL.</span>
+</span><span id="UserManager-15"><a href="#UserManager-15"><span class="linenos"> 15</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="UserManager-16"><a href="#UserManager-16"><span class="linenos"> 16</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span id="UserManager-17"><a href="#UserManager-17"><span class="linenos"> 17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-18"><a href="#UserManager-18"><span class="linenos"> 18</span></a><span class="sd">        Inicializa o gerenciador de usuários e estabelece a conexão com o banco de dados.</span>
+</span><span id="UserManager-19"><a href="#UserManager-19"><span class="linenos"> 19</span></a>
+</span><span id="UserManager-20"><a href="#UserManager-20"><span class="linenos"> 20</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager-21"><a href="#UserManager-21"><span class="linenos"> 21</span></a><span class="sd">            db_path (str, opcional): Caminho para o banco de dados SQLite.</span>
+</span><span id="UserManager-22"><a href="#UserManager-22"><span class="linenos"> 22</span></a><span class="sd">                                     Se não for fornecido, usa `config.DB_PATH`.</span>
+</span><span id="UserManager-23"><a href="#UserManager-23"><span class="linenos"> 23</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-24"><a href="#UserManager-24"><span class="linenos"> 24</span></a>        
+</span><span id="UserManager-25"><a href="#UserManager-25"><span class="linenos"> 25</span></a>        <span class="k">if</span> <span class="n">db_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="UserManager-26"><a href="#UserManager-26"><span class="linenos"> 26</span></a>            
+</span><span id="UserManager-27"><a href="#UserManager-27"><span class="linenos"> 27</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
+</span><span id="UserManager-28"><a href="#UserManager-28"><span class="linenos"> 28</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="UserManager-29"><a href="#UserManager-29"><span class="linenos"> 29</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
+</span><span id="UserManager-30"><a href="#UserManager-30"><span class="linenos"> 30</span></a>
+</span><span id="UserManager-31"><a href="#UserManager-31"><span class="linenos"> 31</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
+</span><span id="UserManager-32"><a href="#UserManager-32"><span class="linenos"> 32</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span><span id="UserManager-33"><a href="#UserManager-33"><span class="linenos"> 33</span></a>
+</span><span id="UserManager-34"><a href="#UserManager-34"><span class="linenos"> 34</span></a>    <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+</span><span id="UserManager-35"><a href="#UserManager-35"><span class="linenos"> 35</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-36"><a href="#UserManager-36"><span class="linenos"> 36</span></a><span class="sd">        Retorna uma lista com todos os usuários cadastrados no banco de dados.</span>
+</span><span id="UserManager-37"><a href="#UserManager-37"><span class="linenos"> 37</span></a>
+</span><span id="UserManager-38"><a href="#UserManager-38"><span class="linenos"> 38</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager-39"><a href="#UserManager-39"><span class="linenos"> 39</span></a><span class="sd">            list[tuple]: Lista de tuplas contendo (ID, NOME) de cada usuário.</span>
+</span><span id="UserManager-40"><a href="#UserManager-40"><span class="linenos"> 40</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-41"><a href="#UserManager-41"><span class="linenos"> 41</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT ID, NOME FROM usuarios&quot;</span><span class="p">)</span>
+</span><span id="UserManager-42"><a href="#UserManager-42"><span class="linenos"> 42</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span><span id="UserManager-43"><a href="#UserManager-43"><span class="linenos"> 43</span></a>    
+</span><span id="UserManager-44"><a href="#UserManager-44"><span class="linenos"> 44</span></a>    <span class="k">def</span> <span class="nf">get_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span id="UserManager-45"><a href="#UserManager-45"><span class="linenos"> 45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-46"><a href="#UserManager-46"><span class="linenos"> 46</span></a><span class="sd">        Retorna o ID de um usuário a partir do nome informado.</span>
+</span><span id="UserManager-47"><a href="#UserManager-47"><span class="linenos"> 47</span></a>
+</span><span id="UserManager-48"><a href="#UserManager-48"><span class="linenos"> 48</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager-49"><a href="#UserManager-49"><span class="linenos"> 49</span></a><span class="sd">            username (str): Nome do usuário.</span>
+</span><span id="UserManager-50"><a href="#UserManager-50"><span class="linenos"> 50</span></a>
+</span><span id="UserManager-51"><a href="#UserManager-51"><span class="linenos"> 51</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager-52"><a href="#UserManager-52"><span class="linenos"> 52</span></a><span class="sd">            int | None: Retorna o ID do usuário se encontrado, caso contrário None.</span>
+</span><span id="UserManager-53"><a href="#UserManager-53"><span class="linenos"> 53</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-54"><a href="#UserManager-54"><span class="linenos"> 54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+</span><span id="UserManager-55"><a href="#UserManager-55"><span class="linenos"> 55</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span id="UserManager-56"><a href="#UserManager-56"><span class="linenos"> 56</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="UserManager-57"><a href="#UserManager-57"><span class="linenos"> 57</span></a>    
+</span><span id="UserManager-58"><a href="#UserManager-58"><span class="linenos"> 58</span></a>    <span class="k">def</span> <span class="nf">get_acess_lvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span id="UserManager-59"><a href="#UserManager-59"><span class="linenos"> 59</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-60"><a href="#UserManager-60"><span class="linenos"> 60</span></a><span class="sd">        Retorna o nivel de acesso de um usuário a partir do nome informado.</span>
+</span><span id="UserManager-61"><a href="#UserManager-61"><span class="linenos"> 61</span></a>
+</span><span id="UserManager-62"><a href="#UserManager-62"><span class="linenos"> 62</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager-63"><a href="#UserManager-63"><span class="linenos"> 63</span></a><span class="sd">            username (str): Nome do usuário.</span>
+</span><span id="UserManager-64"><a href="#UserManager-64"><span class="linenos"> 64</span></a>
+</span><span id="UserManager-65"><a href="#UserManager-65"><span class="linenos"> 65</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager-66"><a href="#UserManager-66"><span class="linenos"> 66</span></a><span class="sd">            int | None: Retorna o nivel de acesso do usuário se encontrado, caso contrário None.</span>
+</span><span id="UserManager-67"><a href="#UserManager-67"><span class="linenos"> 67</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-68"><a href="#UserManager-68"><span class="linenos"> 68</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT nivel_acesso FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+</span><span id="UserManager-69"><a href="#UserManager-69"><span class="linenos"> 69</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span id="UserManager-70"><a href="#UserManager-70"><span class="linenos"> 70</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="UserManager-71"><a href="#UserManager-71"><span class="linenos"> 71</span></a>    
+</span><span id="UserManager-72"><a href="#UserManager-72"><span class="linenos"> 72</span></a>    <span class="k">def</span> <span class="nf">get_fingerprints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+</span><span id="UserManager-73"><a href="#UserManager-73"><span class="linenos"> 73</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-74"><a href="#UserManager-74"><span class="linenos"> 74</span></a><span class="sd">        Obtém todas as digitais (templates biométricos) associadas a um usuário.</span>
+</span><span id="UserManager-75"><a href="#UserManager-75"><span class="linenos"> 75</span></a>
+</span><span id="UserManager-76"><a href="#UserManager-76"><span class="linenos"> 76</span></a><span class="sd">        Cada template é convertido de BLOB para um array NumPy com formato (-1, 3).</span>
+</span><span id="UserManager-77"><a href="#UserManager-77"><span class="linenos"> 77</span></a>
+</span><span id="UserManager-78"><a href="#UserManager-78"><span class="linenos"> 78</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager-79"><a href="#UserManager-79"><span class="linenos"> 79</span></a><span class="sd">            user_id (int): ID do usuário cujas digitais serão recuperadas.</span>
+</span><span id="UserManager-80"><a href="#UserManager-80"><span class="linenos"> 80</span></a>
+</span><span id="UserManager-81"><a href="#UserManager-81"><span class="linenos"> 81</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager-82"><a href="#UserManager-82"><span class="linenos"> 82</span></a><span class="sd">            list[np.ndarray]: Lista de templates biométricos do usuário.</span>
+</span><span id="UserManager-83"><a href="#UserManager-83"><span class="linenos"> 83</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-84"><a href="#UserManager-84"><span class="linenos"> 84</span></a>
+</span><span id="UserManager-85"><a href="#UserManager-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT template FROM DIGITAIS WHERE ID_USUARIO = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+</span><span id="UserManager-86"><a href="#UserManager-86"><span class="linenos"> 86</span></a>        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span><span id="UserManager-87"><a href="#UserManager-87"><span class="linenos"> 87</span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+</span><span id="UserManager-88"><a href="#UserManager-88"><span class="linenos"> 88</span></a>    
+</span><span id="UserManager-89"><a href="#UserManager-89"><span class="linenos"> 89</span></a>    <span class="k">def</span> <span class="nf">get_links_by_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span> 
+</span><span id="UserManager-90"><a href="#UserManager-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-91"><a href="#UserManager-91"><span class="linenos"> 91</span></a><span class="sd">        Retorna uma lista de links disponíveis para o nível de acesso do usuário.</span>
+</span><span id="UserManager-92"><a href="#UserManager-92"><span class="linenos"> 92</span></a>
+</span><span id="UserManager-93"><a href="#UserManager-93"><span class="linenos"> 93</span></a><span class="sd">        Args</span>
+</span><span id="UserManager-94"><a href="#UserManager-94"><span class="linenos"> 94</span></a><span class="sd">            user_level (int) : Nivel de Acesso do usuário</span>
+</span><span id="UserManager-95"><a href="#UserManager-95"><span class="linenos"> 95</span></a><span class="sd">    </span>
+</span><span id="UserManager-96"><a href="#UserManager-96"><span class="linenos"> 96</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager-97"><a href="#UserManager-97"><span class="linenos"> 97</span></a><span class="sd">            list: Lista de links que o usuario pode acessar</span>
+</span><span id="UserManager-98"><a href="#UserManager-98"><span class="linenos"> 98</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-99"><a href="#UserManager-99"><span class="linenos"> 99</span></a>        
+</span><span id="UserManager-100"><a href="#UserManager-100"><span class="linenos">100</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT LINK FROM INFORMACOES WHERE CLASSIFICACAO &lt;= ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_level</span><span class="p">,))</span>
+</span><span id="UserManager-101"><a href="#UserManager-101"><span class="linenos">101</span></a>        <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+</span><span id="UserManager-102"><a href="#UserManager-102"><span class="linenos">102</span></a>        <span class="k">return</span> <span class="n">links</span>
+</span><span id="UserManager-103"><a href="#UserManager-103"><span class="linenos">103</span></a>
+</span><span id="UserManager-104"><a href="#UserManager-104"><span class="linenos">104</span></a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="UserManager-105"><a href="#UserManager-105"><span class="linenos">105</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager-106"><a href="#UserManager-106"><span class="linenos">106</span></a><span class="sd">        Encerra a conexão com o banco de dados.</span>
+</span><span id="UserManager-107"><a href="#UserManager-107"><span class="linenos">107</span></a>
+</span><span id="UserManager-108"><a href="#UserManager-108"><span class="linenos">108</span></a><span class="sd">        É importante chamar este método ao finalizar o uso da classe para</span>
+</span><span id="UserManager-109"><a href="#UserManager-109"><span class="linenos">109</span></a><span class="sd">        liberar os recursos e evitar corrupção no banco de dados.</span>
+</span><span id="UserManager-110"><a href="#UserManager-110"><span class="linenos">110</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager-111"><a href="#UserManager-111"><span class="linenos">111</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -265,24 +337,29 @@ UserManager    </h1>
                                         <input id="UserManager.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
-        <span class="name">UserManager</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;biometria.db&#39;</span></span>)</span>
+        <span class="name">UserManager</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">db_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
 
                 <label class="view-source-button" for="UserManager.__init__-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#UserManager.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.__init__-15"><a href="#UserManager.__init__-15"><span class="linenos">15</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;biometria.db&quot;</span><span class="p">):</span>
-</span><span id="UserManager.__init__-16"><a href="#UserManager.__init__-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager.__init__-17"><a href="#UserManager.__init__-17"><span class="linenos">17</span></a><span class="sd">        Inicializa o gerenciador de usuários e estabelece a conexão com o banco de dados.</span>
-</span><span id="UserManager.__init__-18"><a href="#UserManager.__init__-18"><span class="linenos">18</span></a>
-</span><span id="UserManager.__init__-19"><a href="#UserManager.__init__-19"><span class="linenos">19</span></a><span class="sd">        Args:</span>
-</span><span id="UserManager.__init__-20"><a href="#UserManager.__init__-20"><span class="linenos">20</span></a><span class="sd">            db_path (str, opcional): Caminho para o banco de dados SQLite.</span>
-</span><span id="UserManager.__init__-21"><a href="#UserManager.__init__-21"><span class="linenos">21</span></a><span class="sd">                                     O padrão é &#39;biometria.db&#39;.</span>
-</span><span id="UserManager.__init__-22"><a href="#UserManager.__init__-22"><span class="linenos">22</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager.__init__-23"><a href="#UserManager.__init__-23"><span class="linenos">23</span></a>
-</span><span id="UserManager.__init__-24"><a href="#UserManager.__init__-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
-</span><span id="UserManager.__init__-25"><a href="#UserManager.__init__-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
-</span><span id="UserManager.__init__-26"><a href="#UserManager.__init__-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.__init__-16"><a href="#UserManager.__init__-16"><span class="linenos">16</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+</span><span id="UserManager.__init__-17"><a href="#UserManager.__init__-17"><span class="linenos">17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.__init__-18"><a href="#UserManager.__init__-18"><span class="linenos">18</span></a><span class="sd">        Inicializa o gerenciador de usuários e estabelece a conexão com o banco de dados.</span>
+</span><span id="UserManager.__init__-19"><a href="#UserManager.__init__-19"><span class="linenos">19</span></a>
+</span><span id="UserManager.__init__-20"><a href="#UserManager.__init__-20"><span class="linenos">20</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager.__init__-21"><a href="#UserManager.__init__-21"><span class="linenos">21</span></a><span class="sd">            db_path (str, opcional): Caminho para o banco de dados SQLite.</span>
+</span><span id="UserManager.__init__-22"><a href="#UserManager.__init__-22"><span class="linenos">22</span></a><span class="sd">                                     Se não for fornecido, usa `config.DB_PATH`.</span>
+</span><span id="UserManager.__init__-23"><a href="#UserManager.__init__-23"><span class="linenos">23</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.__init__-24"><a href="#UserManager.__init__-24"><span class="linenos">24</span></a>        
+</span><span id="UserManager.__init__-25"><a href="#UserManager.__init__-25"><span class="linenos">25</span></a>        <span class="k">if</span> <span class="n">db_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="UserManager.__init__-26"><a href="#UserManager.__init__-26"><span class="linenos">26</span></a>            
+</span><span id="UserManager.__init__-27"><a href="#UserManager.__init__-27"><span class="linenos">27</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
+</span><span id="UserManager.__init__-28"><a href="#UserManager.__init__-28"><span class="linenos">28</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="UserManager.__init__-29"><a href="#UserManager.__init__-29"><span class="linenos">29</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
+</span><span id="UserManager.__init__-30"><a href="#UserManager.__init__-30"><span class="linenos">30</span></a>
+</span><span id="UserManager.__init__-31"><a href="#UserManager.__init__-31"><span class="linenos">31</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
+</span><span id="UserManager.__init__-32"><a href="#UserManager.__init__-32"><span class="linenos">32</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -290,20 +367,9 @@ UserManager    </h1>
 
 <p>Args:
     db_path (str, opcional): Caminho para o banco de dados SQLite.
-                             O padrão é 'biometria.db'.</p>
+                             Se não for fornecido, usa <code>config.DB_PATH</code>.</p>
 </div>
 
-
-                            </div>
-                            <div id="UserManager.db_path" class="classattr">
-                                <div class="attr variable">
-            <span class="name">db_path</span>
-
-        
-    </div>
-    <a class="headerlink" href="#UserManager.db_path"></a>
-    
-    
 
                             </div>
                             <div id="UserManager.conn" class="classattr">
@@ -339,15 +405,15 @@ UserManager    </h1>
 
     </div>
     <a class="headerlink" href="#UserManager.list_users"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.list_users-28"><a href="#UserManager.list_users-28"><span class="linenos">28</span></a>    <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-</span><span id="UserManager.list_users-29"><a href="#UserManager.list_users-29"><span class="linenos">29</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager.list_users-30"><a href="#UserManager.list_users-30"><span class="linenos">30</span></a><span class="sd">        Retorna uma lista com todos os usuários cadastrados no banco de dados.</span>
-</span><span id="UserManager.list_users-31"><a href="#UserManager.list_users-31"><span class="linenos">31</span></a>
-</span><span id="UserManager.list_users-32"><a href="#UserManager.list_users-32"><span class="linenos">32</span></a><span class="sd">        Returns:</span>
-</span><span id="UserManager.list_users-33"><a href="#UserManager.list_users-33"><span class="linenos">33</span></a><span class="sd">            list[tuple]: Lista de tuplas contendo (ID, NOME) de cada usuário.</span>
-</span><span id="UserManager.list_users-34"><a href="#UserManager.list_users-34"><span class="linenos">34</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager.list_users-35"><a href="#UserManager.list_users-35"><span class="linenos">35</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT ID, NOME FROM usuarios&quot;</span><span class="p">)</span>
-</span><span id="UserManager.list_users-36"><a href="#UserManager.list_users-36"><span class="linenos">36</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.list_users-34"><a href="#UserManager.list_users-34"><span class="linenos">34</span></a>    <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+</span><span id="UserManager.list_users-35"><a href="#UserManager.list_users-35"><span class="linenos">35</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.list_users-36"><a href="#UserManager.list_users-36"><span class="linenos">36</span></a><span class="sd">        Retorna uma lista com todos os usuários cadastrados no banco de dados.</span>
+</span><span id="UserManager.list_users-37"><a href="#UserManager.list_users-37"><span class="linenos">37</span></a>
+</span><span id="UserManager.list_users-38"><a href="#UserManager.list_users-38"><span class="linenos">38</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager.list_users-39"><a href="#UserManager.list_users-39"><span class="linenos">39</span></a><span class="sd">            list[tuple]: Lista de tuplas contendo (ID, NOME) de cada usuário.</span>
+</span><span id="UserManager.list_users-40"><a href="#UserManager.list_users-40"><span class="linenos">40</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.list_users-41"><a href="#UserManager.list_users-41"><span class="linenos">41</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT ID, NOME FROM usuarios&quot;</span><span class="p">)</span>
+</span><span id="UserManager.list_users-42"><a href="#UserManager.list_users-42"><span class="linenos">42</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -370,19 +436,19 @@ UserManager    </h1>
 
     </div>
     <a class="headerlink" href="#UserManager.get_user_id"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.get_user_id-38"><a href="#UserManager.get_user_id-38"><span class="linenos">38</span></a>    <span class="k">def</span> <span class="nf">get_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-</span><span id="UserManager.get_user_id-39"><a href="#UserManager.get_user_id-39"><span class="linenos">39</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager.get_user_id-40"><a href="#UserManager.get_user_id-40"><span class="linenos">40</span></a><span class="sd">        Retorna o ID de um usuário a partir do nome informado.</span>
-</span><span id="UserManager.get_user_id-41"><a href="#UserManager.get_user_id-41"><span class="linenos">41</span></a>
-</span><span id="UserManager.get_user_id-42"><a href="#UserManager.get_user_id-42"><span class="linenos">42</span></a><span class="sd">        Args:</span>
-</span><span id="UserManager.get_user_id-43"><a href="#UserManager.get_user_id-43"><span class="linenos">43</span></a><span class="sd">            username (str): Nome do usuário.</span>
-</span><span id="UserManager.get_user_id-44"><a href="#UserManager.get_user_id-44"><span class="linenos">44</span></a>
-</span><span id="UserManager.get_user_id-45"><a href="#UserManager.get_user_id-45"><span class="linenos">45</span></a><span class="sd">        Returns:</span>
-</span><span id="UserManager.get_user_id-46"><a href="#UserManager.get_user_id-46"><span class="linenos">46</span></a><span class="sd">            int | None: Retorna o ID do usuário se encontrado, caso contrário None.</span>
-</span><span id="UserManager.get_user_id-47"><a href="#UserManager.get_user_id-47"><span class="linenos">47</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager.get_user_id-48"><a href="#UserManager.get_user_id-48"><span class="linenos">48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="p">,))</span>
-</span><span id="UserManager.get_user_id-49"><a href="#UserManager.get_user_id-49"><span class="linenos">49</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-</span><span id="UserManager.get_user_id-50"><a href="#UserManager.get_user_id-50"><span class="linenos">50</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.get_user_id-44"><a href="#UserManager.get_user_id-44"><span class="linenos">44</span></a>    <span class="k">def</span> <span class="nf">get_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span id="UserManager.get_user_id-45"><a href="#UserManager.get_user_id-45"><span class="linenos">45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.get_user_id-46"><a href="#UserManager.get_user_id-46"><span class="linenos">46</span></a><span class="sd">        Retorna o ID de um usuário a partir do nome informado.</span>
+</span><span id="UserManager.get_user_id-47"><a href="#UserManager.get_user_id-47"><span class="linenos">47</span></a>
+</span><span id="UserManager.get_user_id-48"><a href="#UserManager.get_user_id-48"><span class="linenos">48</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager.get_user_id-49"><a href="#UserManager.get_user_id-49"><span class="linenos">49</span></a><span class="sd">            username (str): Nome do usuário.</span>
+</span><span id="UserManager.get_user_id-50"><a href="#UserManager.get_user_id-50"><span class="linenos">50</span></a>
+</span><span id="UserManager.get_user_id-51"><a href="#UserManager.get_user_id-51"><span class="linenos">51</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager.get_user_id-52"><a href="#UserManager.get_user_id-52"><span class="linenos">52</span></a><span class="sd">            int | None: Retorna o ID do usuário se encontrado, caso contrário None.</span>
+</span><span id="UserManager.get_user_id-53"><a href="#UserManager.get_user_id-53"><span class="linenos">53</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.get_user_id-54"><a href="#UserManager.get_user_id-54"><span class="linenos">54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+</span><span id="UserManager.get_user_id-55"><a href="#UserManager.get_user_id-55"><span class="linenos">55</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span id="UserManager.get_user_id-56"><a href="#UserManager.get_user_id-56"><span class="linenos">56</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
 </span></pre></div>
 
 
@@ -393,6 +459,44 @@ UserManager    </h1>
 
 <p>Returns:
     int | None: Retorna o ID do usuário se encontrado, caso contrário None.</p>
+</div>
+
+
+                            </div>
+                            <div id="UserManager.get_acess_lvl" class="classattr">
+                                        <input id="UserManager.get_acess_lvl-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_acess_lvl</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">username</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>:</span></span>
+
+                <label class="view-source-button" for="UserManager.get_acess_lvl-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#UserManager.get_acess_lvl"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.get_acess_lvl-58"><a href="#UserManager.get_acess_lvl-58"><span class="linenos">58</span></a>    <span class="k">def</span> <span class="nf">get_acess_lvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+</span><span id="UserManager.get_acess_lvl-59"><a href="#UserManager.get_acess_lvl-59"><span class="linenos">59</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.get_acess_lvl-60"><a href="#UserManager.get_acess_lvl-60"><span class="linenos">60</span></a><span class="sd">        Retorna o nivel de acesso de um usuário a partir do nome informado.</span>
+</span><span id="UserManager.get_acess_lvl-61"><a href="#UserManager.get_acess_lvl-61"><span class="linenos">61</span></a>
+</span><span id="UserManager.get_acess_lvl-62"><a href="#UserManager.get_acess_lvl-62"><span class="linenos">62</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager.get_acess_lvl-63"><a href="#UserManager.get_acess_lvl-63"><span class="linenos">63</span></a><span class="sd">            username (str): Nome do usuário.</span>
+</span><span id="UserManager.get_acess_lvl-64"><a href="#UserManager.get_acess_lvl-64"><span class="linenos">64</span></a>
+</span><span id="UserManager.get_acess_lvl-65"><a href="#UserManager.get_acess_lvl-65"><span class="linenos">65</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager.get_acess_lvl-66"><a href="#UserManager.get_acess_lvl-66"><span class="linenos">66</span></a><span class="sd">            int | None: Retorna o nivel de acesso do usuário se encontrado, caso contrário None.</span>
+</span><span id="UserManager.get_acess_lvl-67"><a href="#UserManager.get_acess_lvl-67"><span class="linenos">67</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.get_acess_lvl-68"><a href="#UserManager.get_acess_lvl-68"><span class="linenos">68</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT nivel_acesso FROM usuarios WHERE NOME = ?&quot;</span><span class="p">,(</span><span class="n">username</span><span class="o">.</span><span class="n">upper</span><span class="p">(),))</span>
+</span><span id="UserManager.get_acess_lvl-69"><a href="#UserManager.get_acess_lvl-69"><span class="linenos">69</span></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span id="UserManager.get_acess_lvl-70"><a href="#UserManager.get_acess_lvl-70"><span class="linenos">70</span></a>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Retorna o nivel de acesso de um usuário a partir do nome informado.</p>
+
+<p>Args:
+    username (str): Nome do usuário.</p>
+
+<p>Returns:
+    int | None: Retorna o nivel de acesso do usuário se encontrado, caso contrário None.</p>
 </div>
 
 
@@ -408,22 +512,22 @@ UserManager    </h1>
 
     </div>
     <a class="headerlink" href="#UserManager.get_fingerprints"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.get_fingerprints-52"><a href="#UserManager.get_fingerprints-52"><span class="linenos">52</span></a>    <span class="k">def</span> <span class="nf">get_fingerprints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-</span><span id="UserManager.get_fingerprints-53"><a href="#UserManager.get_fingerprints-53"><span class="linenos">53</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager.get_fingerprints-54"><a href="#UserManager.get_fingerprints-54"><span class="linenos">54</span></a><span class="sd">        Obtém todas as digitais (templates biométricos) associadas a um usuário.</span>
-</span><span id="UserManager.get_fingerprints-55"><a href="#UserManager.get_fingerprints-55"><span class="linenos">55</span></a>
-</span><span id="UserManager.get_fingerprints-56"><a href="#UserManager.get_fingerprints-56"><span class="linenos">56</span></a><span class="sd">        Cada template é convertido de BLOB para um array NumPy com formato (-1, 3).</span>
-</span><span id="UserManager.get_fingerprints-57"><a href="#UserManager.get_fingerprints-57"><span class="linenos">57</span></a>
-</span><span id="UserManager.get_fingerprints-58"><a href="#UserManager.get_fingerprints-58"><span class="linenos">58</span></a><span class="sd">        Args:</span>
-</span><span id="UserManager.get_fingerprints-59"><a href="#UserManager.get_fingerprints-59"><span class="linenos">59</span></a><span class="sd">            user_id (int): ID do usuário cujas digitais serão recuperadas.</span>
-</span><span id="UserManager.get_fingerprints-60"><a href="#UserManager.get_fingerprints-60"><span class="linenos">60</span></a>
-</span><span id="UserManager.get_fingerprints-61"><a href="#UserManager.get_fingerprints-61"><span class="linenos">61</span></a><span class="sd">        Returns:</span>
-</span><span id="UserManager.get_fingerprints-62"><a href="#UserManager.get_fingerprints-62"><span class="linenos">62</span></a><span class="sd">            list[np.ndarray]: Lista de templates biométricos do usuário.</span>
-</span><span id="UserManager.get_fingerprints-63"><a href="#UserManager.get_fingerprints-63"><span class="linenos">63</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager.get_fingerprints-64"><a href="#UserManager.get_fingerprints-64"><span class="linenos">64</span></a>
-</span><span id="UserManager.get_fingerprints-65"><a href="#UserManager.get_fingerprints-65"><span class="linenos">65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT template FROM DIGITAIS WHERE ID_USUARIO = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
-</span><span id="UserManager.get_fingerprints-66"><a href="#UserManager.get_fingerprints-66"><span class="linenos">66</span></a>        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-</span><span id="UserManager.get_fingerprints-67"><a href="#UserManager.get_fingerprints-67"><span class="linenos">67</span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.get_fingerprints-72"><a href="#UserManager.get_fingerprints-72"><span class="linenos">72</span></a>    <span class="k">def</span> <span class="nf">get_fingerprints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+</span><span id="UserManager.get_fingerprints-73"><a href="#UserManager.get_fingerprints-73"><span class="linenos">73</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.get_fingerprints-74"><a href="#UserManager.get_fingerprints-74"><span class="linenos">74</span></a><span class="sd">        Obtém todas as digitais (templates biométricos) associadas a um usuário.</span>
+</span><span id="UserManager.get_fingerprints-75"><a href="#UserManager.get_fingerprints-75"><span class="linenos">75</span></a>
+</span><span id="UserManager.get_fingerprints-76"><a href="#UserManager.get_fingerprints-76"><span class="linenos">76</span></a><span class="sd">        Cada template é convertido de BLOB para um array NumPy com formato (-1, 3).</span>
+</span><span id="UserManager.get_fingerprints-77"><a href="#UserManager.get_fingerprints-77"><span class="linenos">77</span></a>
+</span><span id="UserManager.get_fingerprints-78"><a href="#UserManager.get_fingerprints-78"><span class="linenos">78</span></a><span class="sd">        Args:</span>
+</span><span id="UserManager.get_fingerprints-79"><a href="#UserManager.get_fingerprints-79"><span class="linenos">79</span></a><span class="sd">            user_id (int): ID do usuário cujas digitais serão recuperadas.</span>
+</span><span id="UserManager.get_fingerprints-80"><a href="#UserManager.get_fingerprints-80"><span class="linenos">80</span></a>
+</span><span id="UserManager.get_fingerprints-81"><a href="#UserManager.get_fingerprints-81"><span class="linenos">81</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager.get_fingerprints-82"><a href="#UserManager.get_fingerprints-82"><span class="linenos">82</span></a><span class="sd">            list[np.ndarray]: Lista de templates biométricos do usuário.</span>
+</span><span id="UserManager.get_fingerprints-83"><a href="#UserManager.get_fingerprints-83"><span class="linenos">83</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.get_fingerprints-84"><a href="#UserManager.get_fingerprints-84"><span class="linenos">84</span></a>
+</span><span id="UserManager.get_fingerprints-85"><a href="#UserManager.get_fingerprints-85"><span class="linenos">85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT template FROM DIGITAIS WHERE ID_USUARIO = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+</span><span id="UserManager.get_fingerprints-86"><a href="#UserManager.get_fingerprints-86"><span class="linenos">86</span></a>        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span><span id="UserManager.get_fingerprints-87"><a href="#UserManager.get_fingerprints-87"><span class="linenos">87</span></a>        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -440,6 +544,45 @@ UserManager    </h1>
 
 
                             </div>
+                            <div id="UserManager.get_links_by_access" class="classattr">
+                                        <input id="UserManager.get_links_by_access-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_links_by_access</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">user_level</span><span class="p">:</span> <span class="nb">int</span></span><span class="return-annotation">) -> <span class="n">List</span>:</span></span>
+
+                <label class="view-source-button" for="UserManager.get_links_by_access-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#UserManager.get_links_by_access"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.get_links_by_access-89"><a href="#UserManager.get_links_by_access-89"><span class="linenos"> 89</span></a>    <span class="k">def</span> <span class="nf">get_links_by_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span> 
+</span><span id="UserManager.get_links_by_access-90"><a href="#UserManager.get_links_by_access-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.get_links_by_access-91"><a href="#UserManager.get_links_by_access-91"><span class="linenos"> 91</span></a><span class="sd">        Retorna uma lista de links disponíveis para o nível de acesso do usuário.</span>
+</span><span id="UserManager.get_links_by_access-92"><a href="#UserManager.get_links_by_access-92"><span class="linenos"> 92</span></a>
+</span><span id="UserManager.get_links_by_access-93"><a href="#UserManager.get_links_by_access-93"><span class="linenos"> 93</span></a><span class="sd">        Args</span>
+</span><span id="UserManager.get_links_by_access-94"><a href="#UserManager.get_links_by_access-94"><span class="linenos"> 94</span></a><span class="sd">            user_level (int) : Nivel de Acesso do usuário</span>
+</span><span id="UserManager.get_links_by_access-95"><a href="#UserManager.get_links_by_access-95"><span class="linenos"> 95</span></a><span class="sd">    </span>
+</span><span id="UserManager.get_links_by_access-96"><a href="#UserManager.get_links_by_access-96"><span class="linenos"> 96</span></a><span class="sd">        Returns:</span>
+</span><span id="UserManager.get_links_by_access-97"><a href="#UserManager.get_links_by_access-97"><span class="linenos"> 97</span></a><span class="sd">            list: Lista de links que o usuario pode acessar</span>
+</span><span id="UserManager.get_links_by_access-98"><a href="#UserManager.get_links_by_access-98"><span class="linenos"> 98</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.get_links_by_access-99"><a href="#UserManager.get_links_by_access-99"><span class="linenos"> 99</span></a>        
+</span><span id="UserManager.get_links_by_access-100"><a href="#UserManager.get_links_by_access-100"><span class="linenos">100</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT LINK FROM INFORMACOES WHERE CLASSIFICACAO &lt;= ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_level</span><span class="p">,))</span>
+</span><span id="UserManager.get_links_by_access-101"><a href="#UserManager.get_links_by_access-101"><span class="linenos">101</span></a>        <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+</span><span id="UserManager.get_links_by_access-102"><a href="#UserManager.get_links_by_access-102"><span class="linenos">102</span></a>        <span class="k">return</span> <span class="n">links</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Retorna uma lista de links disponíveis para o nível de acesso do usuário.</p>
+
+<p>Args
+    user_level (int) : Nivel de Acesso do usuário</p>
+
+<p>Returns:
+    list: Lista de links que o usuario pode acessar</p>
+</div>
+
+
+                            </div>
                             <div id="UserManager.close" class="classattr">
                                         <input id="UserManager.close-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
@@ -451,14 +594,14 @@ UserManager    </h1>
 
     </div>
     <a class="headerlink" href="#UserManager.close"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.close-69"><a href="#UserManager.close-69"><span class="linenos">69</span></a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="UserManager.close-70"><a href="#UserManager.close-70"><span class="linenos">70</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UserManager.close-71"><a href="#UserManager.close-71"><span class="linenos">71</span></a><span class="sd">        Encerra a conexão com o banco de dados.</span>
-</span><span id="UserManager.close-72"><a href="#UserManager.close-72"><span class="linenos">72</span></a>
-</span><span id="UserManager.close-73"><a href="#UserManager.close-73"><span class="linenos">73</span></a><span class="sd">        É importante chamar este método ao finalizar o uso da classe para</span>
-</span><span id="UserManager.close-74"><a href="#UserManager.close-74"><span class="linenos">74</span></a><span class="sd">        liberar os recursos e evitar corrupção no banco de dados.</span>
-</span><span id="UserManager.close-75"><a href="#UserManager.close-75"><span class="linenos">75</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="UserManager.close-76"><a href="#UserManager.close-76"><span class="linenos">76</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UserManager.close-104"><a href="#UserManager.close-104"><span class="linenos">104</span></a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="UserManager.close-105"><a href="#UserManager.close-105"><span class="linenos">105</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="UserManager.close-106"><a href="#UserManager.close-106"><span class="linenos">106</span></a><span class="sd">        Encerra a conexão com o banco de dados.</span>
+</span><span id="UserManager.close-107"><a href="#UserManager.close-107"><span class="linenos">107</span></a>
+</span><span id="UserManager.close-108"><a href="#UserManager.close-108"><span class="linenos">108</span></a><span class="sd">        É importante chamar este método ao finalizar o uso da classe para</span>
+</span><span id="UserManager.close-109"><a href="#UserManager.close-109"><span class="linenos">109</span></a><span class="sd">        liberar os recursos e evitar corrupção no banco de dados.</span>
+</span><span id="UserManager.close-110"><a href="#UserManager.close-110"><span class="linenos">110</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="UserManager.close-111"><a href="#UserManager.close-111"><span class="linenos">111</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span></pre></div>
 
 

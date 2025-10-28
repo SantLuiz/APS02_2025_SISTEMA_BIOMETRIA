@@ -49,27 +49,27 @@ class BiometricSys:
         Raises:
             ValueError: Se a imagem não puder ser carregada.
         """
-        # 1 - Carregar imagem em grayscale
+        
         img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         if img is None:
             raise ValueError(f"Não foi possível carregar a imagem: {image_path}")
 
-        # 2 - Binarização
+       
         blurred = cv2.GaussianBlur(img, (5,5), 0)
         thresh_val = threshold_otsu(blurred)
         binary = blurred > thresh_val
 
-        # 3 - Skeletonização
+        
         skeleton = skeletonize(binary)
 
-        # 4 - Extrair minutiae (ridge endings e bifurcações)
+        
         minutiae = []
         for y in range(1, skeleton.shape[0]-1):
             for x in range(1, skeleton.shape[1]-1):
                 if skeleton[y, x]:
                     neighborhood = skeleton[y-1:y+2, x-1:x+2]
                     count = np.sum(neighborhood) - 1
-                    if count == 1 or count == 3:  # ridge ending ou bifurcação
+                    if count == 1 or count == 3:  
                         minutiae.append((x, y, int(count)))
         return minutiae
 
@@ -87,7 +87,7 @@ class BiometricSys:
         if not minutiae_points:
             return np.array([])
         template = np.array(minutiae_points, dtype=np.float32)
-        # Opcional: normalizar posições
+        
         template[:,0] /= template[:,0].max()
         template[:,1] /= template[:,1].max()
         return template
@@ -117,10 +117,10 @@ class BiometricSys:
         for x1, y1, type1 in template1:
             for x2, y2, type2 in template2:
                 dist = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
-                # use the resolved tolerance variable (tol) — 'tolerance' may be None
+                
                 if type1 == type2 and dist <= tol:
                     matched += 1
-                    break  # evita múltiplos matches para o mesmo ponto
+                    break  
 
         
         return matched / max(len(template1), len(template2)) * 100
@@ -149,25 +149,25 @@ class BiometricSys:
         Raises:
             ValueError: Se a imagem original não puder ser carregada.
         """
-        # Carregar imagem original
+        
         img = cv2.imread(image_path)
         if img is None:
             raise ValueError(f"Não foi possível carregar a imagem: {image_path}")
 
-        # Converter para RGB (para desenhar colorido)
+        
         img_color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        # Desenhar cada ponto
+        
         for (x, y, m_type) in minutiae_points:
-            if m_type == 1:  # ridge ending → azul
+            if m_type == 1: 
                 cv2.circle(img_color, (x, y), 3, (0, 0, 255), -1)
-            elif m_type == 3:  # bifurcação → vermelho
+            elif m_type == 3:  
                 cv2.circle(img_color, (x, y), 3, (255, 0, 0), -1)
 
-        # Salvar imagem final
+        
         cv2.imwrite(save_path, cv2.cvtColor(img_color, cv2.COLOR_RGB2BGR))
 
-        # Exibir resultado
+        
         if show:
             plt.figure(figsize=(6, 6))
             plt.imshow(img_color)
@@ -185,7 +185,7 @@ class BiometricSys:
         Returns:
             str: Caminho para a imagem a ser processada.
         """
-        Tk().withdraw()  # Hide main Tk window
+        Tk().withdraw()  
         image_path = filedialog.askopenfilename(
         title="Escolha a impressão a ser analizada (.bmp)",
         filetypes=[("BMP images", "*.bmp")]
@@ -193,7 +193,6 @@ class BiometricSys:
 
         if not image_path:
             print("Nunhuma imagem selecionada.")
-            #exit()
-
+            
         else:
             return image_path

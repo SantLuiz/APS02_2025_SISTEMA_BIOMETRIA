@@ -12,17 +12,17 @@ def start():
     que outros módulos (por exemplo `acessos`) importem `main` sem abrir a GUI
     imediatamente, e chamem `main.start()` quando desejarem trocar de janela.
     """
-    # Create the main window
+    
     root = tk.Tk()
     root.title("Cadastro de Usuário")
     root.geometry("300x150")
     root.resizable(False, False)
 
-    # Label for username
+   
     label_nome = ttk.Label(root, text="Nome de Usuário:")
     label_nome.pack(pady=(20, 5))
 
-    # Entry for username
+    
     entry_nome = ttk.Entry(root, width=30)
     entry_nome.pack()
 
@@ -45,7 +45,7 @@ def start():
                 if score > 90:
                     messagebox.showinfo("APROVADO!","IMPRESSÃO VALIDA")
                     template_valido = True
-                    # fecha a janela atual e abre o módulo de acessos
+                    
                     try:
                         root.destroy()
                     except Exception:
@@ -63,11 +63,11 @@ def start():
         else:
             messagebox.showerror("Erro", "NOME INVALIDO")
 
-    # Button for fingerprint insertion
+    
     btn_inserir = ttk.Button(root, text="Inserir Digital", command = Confere)
     btn_inserir.pack(pady=20)
 
-    # Run the app
+    
     root.mainloop()
 
 

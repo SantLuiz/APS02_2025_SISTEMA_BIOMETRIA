@@ -20,9 +20,9 @@ class UserManager:
             db_path (str, opcional): Caminho para o banco de dados SQLite.
                                      Se não for fornecido, usa `config.DB_PATH`.
         """
-        # resolve default path from config
+        
         if db_path is None:
-            # config.DB_PATH is a Path object; sqlite3 accepts path-like objects
+            
             self.db_path = str(config.DB_PATH)
         else:
             self.db_path = db_path
