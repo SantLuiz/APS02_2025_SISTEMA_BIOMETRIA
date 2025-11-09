@@ -6,7 +6,7 @@ import config
 
 class UserManager:
     """
-    CLASSE RESPONSÁVEL POR GERENCIAR OS USUARIOS ADICIONADOS AO BANCO DE DADOS
+    CLASSE RESPONSÁVEL POR GERENCIAR OS USUÁRIOS ADICIONADOS AO BANCO DE DADOS
 
     Attributes:
         db_path (str): Caminho para o banco de dados.

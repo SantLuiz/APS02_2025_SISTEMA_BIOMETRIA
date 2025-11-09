@@ -201,7 +201,7 @@ class BiometricSys:
         )
 
         if not image_path and not os.path.splitext(image_path)[1].lower() == ".bmp":
-            print("Nunhuma imagem selecionada.")
+            print("Nenhuma imagem selecionada.")
 
         else:
             return image_path
