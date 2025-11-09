@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import webbrowser
-from UserManager import UserManager
+from sistema_biometrico.user_manager import UserManager
 
 
 def start(username):
@@ -17,7 +17,7 @@ def start(username):
             webbrowser.open(url)
 
     def show_links_for_user(username):
-        user_level = gerente.get_acess_lvl(username)
+        user_level = gerente.get_access_level(username)
         links = gerente.get_links_by_access(user_level)
 
         listbox_links.delete(0, tk.END)
@@ -35,6 +35,7 @@ def start(username):
             pass
 
         try:
+            gerente.close()
             import main
 
             main.start()
@@ -50,7 +51,7 @@ def start(username):
 
     ttk.Label(
         frame_user,
-        text=f"USUÁRIO: {username.upper()} | NÍVEL DE ACESSO: {gerente.get_acess_lvl(username)}",
+        text=f"USUÁRIO: {username.upper()} | NÍVEL DE ACESSO: {gerente.get_access_level(username)}",
     ).pack(side=tk.LEFT, padx=5)
 
     btn_load = ttk.Button(frame_user, text="Sair", command=sair)

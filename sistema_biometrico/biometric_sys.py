@@ -200,8 +200,14 @@ class BiometricSys:
             ],
         )
 
-        if not image_path and not os.path.splitext(image_path)[1].lower() == ".bmp":
+        # Valida seleção e extensão .bmp
+        if not image_path:
             print("Nenhuma imagem selecionada.")
+            return ""
 
-        else:
-            return image_path
+        _, ext = os.path.splitext(image_path)
+        if ext.lower() != ".bmp":
+            print("Arquivo inválido. Selecione uma imagem .bmp.")
+            return ""
+
+        return image_path

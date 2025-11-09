@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from BiometricSys import BiometricSys
-from UserManager import UserManager
+from sistema_biometrico.biometric_sys import BiometricSys
+from sistema_biometrico.user_manager import UserManager
 
 
 def start():
@@ -24,7 +24,7 @@ def start():
     entry_nome = ttk.Entry(root, width=30)
     entry_nome.pack()
 
-    def Confere():
+    def verificar():
         biometria = BiometricSys()
         gerente = UserManager()
         username = entry_nome.get()
@@ -34,6 +34,10 @@ def start():
 
         if user_id is not None:
             img_path = BiometricSys.get_img_path()
+            if not img_path:
+                messagebox.showwarning("Atenção", "Nenhuma imagem .bmp selecionada.")
+                gerente.close()
+                return
             template_novo = biometria.generate_template(
                 biometria.extract_minutiae(img_path)
             )
@@ -42,7 +46,7 @@ def start():
             for t in templates_cadastrados:
                 score = biometria.compare_templates(template_novo, t)
                 if score > 90:
-                    messagebox.showinfo("APROVADO!", "IMPRESSÃO VALIDA")
+                    messagebox.showinfo("APROVADO!", "IMPRESSÃO VÁLIDA")
                     template_valido = True
 
                     try:
@@ -50,6 +54,7 @@ def start():
                     except Exception:
                         pass
                     try:
+                        gerente.close()
                         import acessos
 
                         acessos.start(username)
@@ -60,12 +65,14 @@ def start():
                     break
 
             if not template_valido:
-                messagebox.showerror("Erro", "IMPRESSÃO INVALIDA")
+                gerente.close()
+                messagebox.showerror("Erro", "IMPRESSÃO INVÁLIDA")
 
         else:
-            messagebox.showerror("Erro", "NOME INVALIDO")
+            gerente.close()
+            messagebox.showerror("Erro", "NOME INVÁLIDO")
 
-    btn_inserir = ttk.Button(root, text="Inserir Digital", command=Confere)
+    btn_inserir = ttk.Button(root, text="Inserir Digital", command=verificar)
     btn_inserir.pack(pady=20)
 
     root.mainloop()
