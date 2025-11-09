@@ -57,15 +57,15 @@ class UserManager:
         result = self.cursor.fetchone()
         return result[0] if result else None
 
-    def get_acess_lvl(self, username: str) -> Optional[int]:
+    def get_access_level(self, username: str) -> Optional[int]:
         """
-        Retorna o nivel de acesso de um usuário a partir do nome informado.
+        Retorna o nível de acesso de um usuário a partir do nome informado.
 
         Args:
             username (str): Nome do usuário.
 
         Returns:
-            int | None: Retorna o nivel de acesso do usuário se encontrado, caso contrário None.
+            int | None: Retorna o nível de acesso do usuário se encontrado, caso contrário None.
         """
         self.cursor.execute(
             "SELECT nivel_acesso FROM usuarios WHERE NOME = ?", (username.upper(),)
