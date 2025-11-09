@@ -73,10 +73,6 @@ class UserManager:
         result = self.cursor.fetchone()
         return result[0] if result else None
 
-    # Compatibilidade retroativa com nome antigo contendo typo
-    def get_acess_lvl(self, username: str) -> Optional[int]:  # pragma: no cover
-        return self.get_access_level(username)
-
     def get_fingerprints(self, user_id: int) -> List[np.ndarray]:
         """
         Obtém todas as digitais (templates biométricos) associadas a um usuário.
