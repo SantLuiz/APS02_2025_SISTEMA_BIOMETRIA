@@ -7,6 +7,7 @@ from skimage.filters import threshold_otsu
 from typing import List, Optional, Tuple
 import matplotlib.pyplot as plt
 
+
 class BiometricSys:
     """
     Classe responsável pelas operações principais do sistema biométrico, incluindo
@@ -25,7 +26,7 @@ class BiometricSys:
             tolerance (float, opcional): Distância máxima entre minúcias para
                 considerar uma correspondência válida. O padrão é 0.05.
         """
-         
+
         self.tolerance = tolerance
 
     def extract_minutiae(self, image_path: str) -> List[Tuple[int, int, int]]:
@@ -50,31 +51,30 @@ class BiometricSys:
         Raises:
             ValueError: Se a imagem não puder ser carregada.
         """
-        
+
         img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         if img is None:
             raise ValueError(f"Não foi possível carregar a imagem: {image_path}")
 
-       
-        blurred = cv2.GaussianBlur(img, (5,5), 0)
+        blurred = cv2.GaussianBlur(img, (5, 5), 0)
         thresh_val = threshold_otsu(blurred)
         binary = blurred > thresh_val
 
-        
         skeleton = skeletonize(binary)
 
-        
         minutiae = []
-        for y in range(1, skeleton.shape[0]-1):
-            for x in range(1, skeleton.shape[1]-1):
+        for y in range(1, skeleton.shape[0] - 1):
+            for x in range(1, skeleton.shape[1] - 1):
                 if skeleton[y, x]:
-                    neighborhood = skeleton[y-1:y+2, x-1:x+2]
+                    neighborhood = skeleton[y - 1 : y + 2, x - 1 : x + 2]
                     count = np.sum(neighborhood) - 1
-                    if count == 1 or count == 3:  
+                    if count == 1 or count == 3:
                         minutiae.append((x, y, int(count)))
         return minutiae
 
-    def generate_template(self, minutiae_points: List[Tuple[int, int, int]]) -> np.ndarray:
+    def generate_template(
+        self, minutiae_points: List[Tuple[int, int, int]]
+    ) -> np.ndarray:
         """
         Converte as minúcias extraídas em um template biométrico normalizado.
 
@@ -88,12 +88,17 @@ class BiometricSys:
         if not minutiae_points:
             return np.array([])
         template = np.array(minutiae_points, dtype=np.float32)
-        
-        template[:,0] /= template[:,0].max()
-        template[:,1] /= template[:,1].max()
+
+        template[:, 0] /= template[:, 0].max()
+        template[:, 1] /= template[:, 1].max()
         return template
 
-    def compare_templates(self,template1: np.ndarray,template2: np.ndarray,tolerance: Optional[float] = None) -> float:
+    def compare_templates(
+        self,
+        template1: np.ndarray,
+        template2: np.ndarray,
+        tolerance: Optional[float] = None,
+    ) -> float:
         """
         Compara dois templates biométricos e calcula o grau de similaridade entre eles.
 
@@ -117,17 +122,21 @@ class BiometricSys:
         matched = 0
         for x1, y1, type1 in template1:
             for x2, y2, type2 in template2:
-                dist = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
-                
+                dist = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+
                 if type1 == type2 and dist <= tol:
                     matched += 1
-                    break  
+                    break
 
-        
         return matched / max(len(template1), len(template2)) * 100
 
     @staticmethod
-    def visualize_minutiae(image_path: str, minutiae_points: List[Tuple[int, int, int]], save_path: str = "output_minutiae.png", show: bool = True) -> np.ndarray:
+    def visualize_minutiae(
+        image_path: str,
+        minutiae_points: List[Tuple[int, int, int]],
+        save_path: str = "output_minutiae.png",
+        show: bool = True,
+    ) -> np.ndarray:
         """
         Gera uma imagem visualizando os pontos de minúcia detectados na impressão digital.
 
@@ -150,25 +159,21 @@ class BiometricSys:
         Raises:
             ValueError: Se a imagem original não puder ser carregada.
         """
-        
+
         img = cv2.imread(image_path)
         if img is None:
             raise ValueError(f"Não foi possível carregar a imagem: {image_path}")
 
-        
         img_color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        
-        for (x, y, m_type) in minutiae_points:
-            if m_type == 1: 
+        for x, y, m_type in minutiae_points:
+            if m_type == 1:
                 cv2.circle(img_color, (x, y), 3, (0, 0, 255), -1)
-            elif m_type == 3:  
+            elif m_type == 3:
                 cv2.circle(img_color, (x, y), 3, (255, 0, 0), -1)
 
-        
         cv2.imwrite(save_path, cv2.cvtColor(img_color, cv2.COLOR_RGB2BGR))
 
-        
         if show:
             plt.figure(figsize=(6, 6))
             plt.imshow(img_color)
@@ -186,14 +191,17 @@ class BiometricSys:
         Returns:
             str: Caminho para a imagem a ser processada.
         """
-        Tk().withdraw()  
+        Tk().withdraw()
         image_path = filedialog.askopenfilename(
             title="Escolha a impressão a ser analisada (.bmp)",
-            filetypes=[("Imagens", "*.bmp *.BMP *.BmP *.bMp"), ("Todos os arquivos", "*.*")]
+            filetypes=[
+                ("Imagens", "*.bmp *.BMP *.BmP *.bMp"),
+                ("Todos os arquivos", "*.*"),
+            ],
         )
 
         if not image_path and not os.path.splitext(image_path)[1].lower() == ".bmp":
             print("Nunhuma imagem selecionada.")
-            
+
         else:
             return image_path
