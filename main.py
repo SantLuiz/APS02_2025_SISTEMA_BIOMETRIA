@@ -55,7 +55,7 @@ def start():
                         pass
                     try:
                         gerente.close()
-                        import acessos
+                        import sistema_biometrico.acessos as acessos
 
                         acessos.start(username)
                     except Exception as e:
