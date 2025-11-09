@@ -1,4 +1,5 @@
 import cv2
+import os
 from tkinter import Tk, filedialog
 import numpy as np
 from skimage.morphology import skeletonize
@@ -187,11 +188,11 @@ class BiometricSys:
         """
         Tk().withdraw()  
         image_path = filedialog.askopenfilename(
-        title="Escolha a impressão a ser analizada (.bmp)",
-        filetypes=[("BMP images", "*.bmp")]
-    )
+            title="Escolha a impressão a ser analisada (.bmp)",
+            filetypes=[("Imagens", "*.bmp *.BMP *.BmP *.bMp"), ("Todos os arquivos", "*.*")]
+        )
 
-        if not image_path:
+        if not image_path and not os.path.splitext(image_path)[1].lower() == ".bmp":
             print("Nunhuma imagem selecionada.")
             
         else:
